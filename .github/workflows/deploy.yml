@@ -29,3 +29,19 @@ jobs:
       - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-nginx
       - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-server
       - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-worker
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+            # Стандартні та правильні назви секретів для AWS
+            aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            # УВАГА: ЗАМІНІТЬ ЦІ 4 РЯДКИ НА ВАШІ РЕАЛЬНІ ДАНІ З КОНСОЛІ AWS:
+            application_name: ${{ vars.EB_APP_NAME }}
+            environment_name: ${{ vars.EB_ENV_NAME }}
+            existing_bucket_name: ${{ vars.EB_BUCKET_NAME }}
+            region: ${{ vars.AWS_REGION }}
+
+            # Динамічна мітка версії для успішного деплою
+            version_label: ${{ github.sha }}
+            deployment_package: deploy.zip
